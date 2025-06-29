@@ -1,0 +1,9 @@
+.venv/
+.idea/
+main_solution/
+ml_solution/
+__pycache__/
+*.pyc
+test.png
+test.py
+
