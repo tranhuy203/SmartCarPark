@@ -1,9 +1,9 @@
 .venv/
 .idea/
-main_solution/
-ml_solution/
+frames_output/
 __pycache__/
 *.pyc
-test.png
-test.py
+crop_image.py
+crop_video_frame.py
+run_video.py
 
