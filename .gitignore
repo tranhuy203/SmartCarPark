@@ -3,7 +3,7 @@
 frames_output/
 __pycache__/
 *.pyc
-crop_image.py
-crop_video_frame.py
-run_video.py
+crop_image
+crop_video_frame
+run_video
 
