@@ -3,7 +3,7 @@ import time
 fps_start_time = time.time()
 frame_count = 0
 fps = 0  # Khởi tạo biến fps
-cap = cv2.VideoCapture("data/carPark2.mp4")
+cap = cv2.VideoCapture("data/carPark.mp4")
 while cap.isOpened():
     ret, frame = cap.read()
     if not ret:
@@ -12,6 +12,7 @@ while cap.isOpened():
 
     # Nhấn phím 'q' để thoát
     if cv2.waitKey(25) & 0xFF == ord('q'):
+        cv2.imwrite("frame.png",frame)
         break
     cv2.putText(frame, f"FPS: {fps:.2f}", (400, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
     # Tính và hiển thị FPS
