@@ -5,6 +5,7 @@ import cv2
 import time
 
 MODEL = pickle.load(open("model.p", "rb"))
+
 def count_edge_points(contour,edge_map):
     zeros_image = np.zeros_like(edge_map)
     cv2.drawContours(zeros_image, [contour], -1, (255,),thickness=-1)  # Tô trắng vùng contour
@@ -136,7 +137,7 @@ def count_empty(spaces_status):
             count+=1
     return count
 
-def detect_cars_using_hybrid(cap, mask, kernel_size = 1, sigma = 0, t_low = 50, t_high = 150, threshold_decide = 100):
+def detect_cars_using_hybrid(cap, mask, kernel_size = 1, sigma = 0, t_low = 50, t_high = 150, threshold_check = 100):
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     # tính fps
     fps_start_time = time.time()
@@ -156,16 +157,14 @@ def detect_cars_using_hybrid(cap, mask, kernel_size = 1, sigma = 0, t_low = 50, 
             x, y, w, h = cv2.boundingRect(contour)
             spot_crop = frame[y:y + h, x:x + w]
             edge_points = cv2.countNonZero(edge_map[y:y + h, x:x + w])
-            if spaces_status[i]==None:
+            if spaces_status[i] is None:
                 spaces_status[i] = empty_or_not(spot_crop)
                 check_edge_points[i] = edge_points
             else:
-                if not ((spaces_status[i] and edge_points <= check_edge_points[i]) or (
-                        spaces_status[i] == False and edge_points >= check_edge_points[i])) \
-                        and abs(edge_points - check_edge_points[i]) > threshold_decide:
+                if (not(spaces_status[i] == False and edge_points >= check_edge_points[i])
+                        and abs(edge_points - check_edge_points[i]) > threshold_check):
                     spaces_status[i] = empty_or_not(spot_crop)
                     check_edge_points[i] = edge_points
-                    print(i)
             if spaces_status[i]:
                 color = (0, 255, 0)
             else:
@@ -181,7 +180,6 @@ def detect_cars_using_hybrid(cap, mask, kernel_size = 1, sigma = 0, t_low = 50, 
             cv2.putText(frame, f"{edge_points} px", (center_x, center_y), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
             # nối các contour
             cv2.polylines(frame, [contour], isClosed=True, color=color, thickness=1)
-            # cv2.rectangle(frame, (x,y),(x+w,y+h),(0,0,0),2)
         cv2.putText(frame, f"Free space: {count_empty(spaces_status)}/{len(spaces_status)}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0),2)
         cv2.putText(frame, f"FPS: {fps:.2f}", (400, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         cv2.imshow("result", frame)
@@ -199,3 +197,4 @@ def detect_cars_using_hybrid(cap, mask, kernel_size = 1, sigma = 0, t_low = 50, 
     # Giải phóng tài nguyên
     cap.release()
     cv2.destroyAllWindows()
+
